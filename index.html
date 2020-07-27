@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>87YLu's Todolists-jq</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="css/index.css">
+
+</head>
+
+<body>
+  <!-- 左边部分 -->
+  <div class="scalable">
+    <!-- 拖动位置 -->
+    <div class="separator"></div>
+    <!-- 清单列表 -->
+    <ul class="lists">
+      <li>ascsac</li>
+    </ul>
+
+    <!-- 添加清单模态框开始 -->
+    <div type="button" class="addlist">+ 新建清单</div>
+
+    <div class="modal fade" id="addlistModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></div>
+            <h4 class="modal-title" id="myModalLabel">新建清单</h4>
+          </div>
+          <input type="text">
+          <div class="modal-body">
+            <span><i class="glyphicon glyphicon-ok"></i></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="modal-footer">
+            <div type="button" data-dismiss="modal" class="confirm">确定</div>
+            <div type="button" data-dismiss="modal" class="cancel">取消</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 添加清单模态框结束 -->
+  </div>
+
+  <!-- 右边部分 -->
+  <div class="main">
+
+  </div>
+
+  <!-- 引入js -->
+  <script src="js/jquery-3.5.1.min.js"></script>
+  <script src="bootstrap/bootstrap.js"></script>
+  <script src="js/index.js"></script>
+
+</body>
+
+</html>
