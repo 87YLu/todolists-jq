@@ -13,18 +13,55 @@
 </head>
 
 <body>
+
+  <!-- 错误提示模态框 -->
+  <div id="mes" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+      <div class="modal-content"></div>
+    </div>
+  </div>
+
   <!-- 左边部分 -->
   <div class="scalable">
-    <!-- 拖动位置 -->
+
+    <!-- 拖动 -->
     <div class="separator"></div>
+
+    <!-- 账户管理模态框开始 -->
+    <div class="user"></div>
+    <div id="users-management" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog"
+      aria-labelledby="mySmallModalLabel">
+      <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+          <p class="title">管理账户</p>
+          <ul class="users"></ul>
+          <div class="add-user">+</div>
+        </div>
+      </div>
+    </div>
+    <!-- 账户管理模态框结束 -->
+
+    <!-- 注册登录模态框开始 -->
+    <div id="logon" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog"
+      aria-labelledby="mySmallModalLabel">
+      <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+          <img src="images/logo.jpg" class="logo">
+          <input type="text" placeholder="请输入账号" class="zhanghao">
+          <input type="password" placeholder="请输入密码" class="mima">
+          <div class="toggle">注册</div>
+          <div class="logon-btn">登录</div>
+        </div>
+      </div>
+    </div>
+    <!-- 注册登录模态框结束 -->
+
     <!-- 清单列表 -->
     <ul class="lists">
-      <li>ascsac</li>
     </ul>
 
     <!-- 添加清单模态框开始 -->
     <div type="button" class="addlist">+ 新建清单</div>
-
     <div class="modal fade" id="addlistModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -33,23 +70,12 @@
                 aria-hidden="true">&times;</span></div>
             <h4 class="modal-title" id="myModalLabel">新建清单</h4>
           </div>
-          <input type="text">
+          <input type="text" placeholder="请输入清单名称">
           <div class="modal-body">
-            <span><i class="glyphicon glyphicon-ok"></i></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+            <!-- 每行5个 -->
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
           </div>
           <div class="modal-footer">
             <div type="button" data-dismiss="modal" class="confirm">确定</div>

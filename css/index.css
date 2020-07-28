@@ -6,6 +6,18 @@ body {
   overflow: hidden;
 }
 
+/* 错误提示样式 */
+#mes .modal-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  width: 300px;
+  height: 100px;
+  font-size: 20px;
+}
+
+/* 左边部分开始 */
 .scalable {
   position: relative;
   background-color: #fff;
@@ -29,13 +41,160 @@ body {
   cursor: col-resize;
 }
 
-.main {
-  flex: 1;
-  position: relative;
-  padding: 0 40px;
-  background-color: #F3F4F6;
+
+/* 账户管理模态框开始 */
+.scalable .user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 50px;
+  border-bottom: 4px solid #F4F4F4;
+}
+.scalable .user:hover {
+  background-color: #eee;
+}
+#users-management .modal-content {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  width: 300px;
 }
 
+#users-management .title {
+  margin-top: -10px;
+  text-align: center;
+  font-size: 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+#users-management .users {
+  margin-top: -10px;
+  border-bottom: 1px solid #ccc;
+}
+
+#users-management .users li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  width: 100%;
+  height: 40px;
+  font-size: 16px;
+}
+
+#users-management .users li:hover {
+  background-color: #eee;
+}
+
+#users-management li span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 10px;
+  width: 60px;
+  height: 25px;
+  color: #fff;
+  background-color: #FC4B66;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#users-management .add-user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  font-size: 20px;
+  color: #ccc;
+  cursor: pointer;
+}
+
+/* 账户管理模态框结束 */
+
+
+/* 登录注册模态框开始 */
+#logon .modal-content {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  flex-direction: column;
+  height: 300px;
+}
+
+#logon .modal-content .logo {
+  width: 35%;
+}
+
+#logon .modal-content input {
+  margin-top: 25px;
+  padding-left: 10px;
+  width: 100%;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  font-size: 14px;
+}
+
+#logon .modal-content .toggle {
+  position: absolute;
+  right: 25px;
+  bottom: 70px;
+  color: #FD5553;
+  cursor: pointer;
+}
+
+#logon .modal-content .logon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 35px;
+  width: 100%;
+  height: 40px;
+  background-color: #FD5553;
+  border-radius: 10px;
+  font-size: 20px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* 登录注册模态框结束 */
+
+
+
+/* 列表样式开始 */
+.scalable .lists li {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  font-size: 18px;
+}
+
+.scalable .lists .current {
+  background-color: #F5F5F5;
+}
+
+.scalable .lists li span {
+  display: block;
+  margin: 0 20px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* 列表样式结束 */
+
+
+/* 新建清单 模态框开始 */
 .scalable .addlist {
   box-sizing: border-box;
   position: absolute;
@@ -52,27 +211,32 @@ body {
   cursor: pointer;
 }
 
-.scalable .modal-title {
+#addlistModal .modal-title {
   text-align: center;
 }
-.scalable input {
+
+#addlistModal input {
+  box-sizing: border-box;
   position: absolute;
   top: 20%;
   left: 50%;
   transform: translateX(-50%);
+  padding-left: 10px;
   width: 80%;
   height: 30px;
   outline: none;
   border: 1px solid #ccc;
 }
-.scalable .modal-body {
+
+#addlistModal .modal-body {
   display: grid;
   grid-template-columns: repeat(5, 20%);
   grid-template-rows: repeat(3, 50px);
   grid-gap: 10px 0;
   margin-top: 50px;
 }
-.scalable .modal-body span {
+
+#addlistModal .modal-body span {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -82,55 +246,70 @@ body {
   border-radius: 50%;
   font-size: 20px;
   color: #fff;
-  background-color: pink;
 }
-.scalable .modal-body span:nth-child(1) {
+
+#addlistModal .modal-body span:nth-child(1) {
   background-color: #D2DFE0;
 }
-.scalable .modal-body span:nth-child(2) {
+
+#addlistModal .modal-body span:nth-child(2) {
   background-color: #204E87;
 }
-.scalable .modal-body span:nth-child(3) {
+
+#addlistModal .modal-body span:nth-child(3) {
   background-color: #3CC6ED;
 }
-.scalable .modal-body span:nth-child(4) {
+
+#addlistModal .modal-body span:nth-child(4) {
   background-color: #FFB03F;
 }
-.scalable .modal-body span:nth-child(5) {
+
+#addlistModal .modal-body span:nth-child(5) {
   background-color: #842D73;
 }
-.scalable .modal-body span:nth-child(6) {
+
+#addlistModal .modal-body span:nth-child(6) {
   background-color: #EE316B;
 }
-.scalable .modal-body span:nth-child(7) {
+
+#addlistModal .modal-body span:nth-child(7) {
   background-color: #FFD426;
 }
-.scalable .modal-body span:nth-child(8) {
+
+#addlistModal .modal-body span:nth-child(8) {
   background-color: #93D04F;
 }
-.scalable .modal-body span:nth-child(9) {
+
+#addlistModal .modal-body span:nth-child(9) {
   background-color: #F36F8E;
 }
-.scalable .modal-body span:nth-child(10) {
+
+#addlistModal .modal-body span:nth-child(10) {
   background-color: #9372B9;
 }
-.scalable .modal-body span:nth-child(11) {
+
+#addlistModal .modal-body span:nth-child(11) {
   background-color: #85FFDA;
 }
-.scalable .modal-body span:nth-child(12) {
+
+#addlistModal .modal-body span:nth-child(12) {
   background-color: #5CE5AA;
 }
-.scalable .modal-body span:nth-child(13) {
+
+#addlistModal .modal-body span:nth-child(13) {
   background-color: #8924E7;
 }
-.scalable .modal-body span:nth-child(14) {
+
+#addlistModal .modal-body span:nth-child(14) {
   background-color: #3673FF;
 }
-.scalable .modal-body span:nth-child(15) {
+
+#addlistModal .modal-body span:nth-child(15) {
   background-color: #FD51D9;
 }
-.scalable .cancel,
-.scalable .confirm {
+
+#addlistModal .cancel,
+#addlistModal .confirm {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -142,8 +321,24 @@ body {
   border: 1px solid #ccc;
   cursor: pointer;
 }
-.scalable .confirm {
+
+#addlistModal .confirm {
   border: none;
   background-color: #FD5553;
   color: #fff;
+}
+
+/* 新建清单 模态框结束 */
+
+
+/* 左边部分结束 */
+
+
+
+/* 右边部分开始 */
+.main {
+  flex: 1;
+  position: relative;
+  padding: 0 40px;
+  background-color: #F3F4F6;
 }
