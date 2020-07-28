@@ -71,7 +71,7 @@ const clearInputData = () => {
 // !! 用户部分开始
 
 
-// 加载管理清单
+// 加载管理用户清单
 const loadUsersManagementList = () => {
   $(".users").html("");
   let arr = JSON.parse(localStorage.getItem("managed-users")) || [];
@@ -79,9 +79,25 @@ const loadUsersManagementList = () => {
     $(".users").append($(`<li>${arr[i]}<span>注销</span></li>`));
   }
 }
+// 加载用户的清单
+const loadUserListContent = () => {
+  $(".scalable .lists").html("");
+  let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`)) || [];
+  for (let i = 0, len = arr.length; i < len; i++) {
+    if (arr[i]["current"]) {
+      let li = $(`<li class="current"><span style="background-color: ${arr[i]["color"]};"></span>${arr[i]["name"]}</li>`)
+      $(".scalable .lists").append(li);
+    } else {
+      let li = $(`<li><span style="background-color: ${arr[i]["color"]};"></span>${arr[i]["name"]}</li>`)
+      $(".scalable .lists").append(li);
+    }
+  }
+}
+
 // 初始化用户名和清单
 $(".user").html(localStorage.getItem("now-user") || "未登录");
 loadUsersManagementList();
+loadUserListContent();
 // 控制组件出现
 $(".user").on("click", function () {
   $("#users-management").modal("show");
@@ -149,6 +165,7 @@ $("#logon .logon-btn").on("click", function () {
         $(".user").html($(".zhanghao").val());
         clearInputData();
         loadUsersManagementList();
+        loadUserListContent();
       }
       // 密码错误
       else {
@@ -192,6 +209,7 @@ $(".users").on("click", "li", function () {
   localStorage.setItem("now-user", str);
   $(".user").html(str);
   $("#users-management").modal("hide");
+  loadUserListContent();
 });
 // 注销
 $(".users").on("click", "span", function (e) {
@@ -208,7 +226,8 @@ $(".users").on("click", "span", function (e) {
     loadUsersManagementList();
     localStorage.removeItem("now-user");
     $(".user").html("未登录");
-  }
+    loadUserListContent();
+  };
 });
 
 
@@ -217,35 +236,80 @@ $(".users").on("click", "span", function (e) {
 
 // !! 新建清单部分开始
 
+// 获取清单名
+const getUsersList = () => {
+  let arr = JSON.parse(localStorage.getItem(`${$(".user").html()}-lists`)) || [];
+  let arr2 = [];
+
+  for (let i = 0, len = arr.length; i < len; i++) {
+    arr2.push(arr[i]["name"]);
+  }
+  return arr2;
+}
 // 点击新建清单
 let index, color;
 $(".addlist").on("click", function () {
-  $("#addlistModal").modal("show");
-  // 初始化序号和颜色
-  index = Math.floor(Math.random() * (14 - 0 + 1) + 0)
-  color = $("#addlistModal .modal-body span").eq(index).css("backgroundColor");
-  // 颜色选择部分
-  $("#addlistModal .modal-body span").eq(index).html(`<i class="glyphicon glyphicon-ok"></i>`).siblings().html("");
-  $("#addlistModal .modal-body").on("click", "span", function (e) {
-    e.stopPropagation();
-    $(this).html(`<i class="glyphicon glyphicon-ok"></i>`).siblings().html("");
-    index = $(this).index();
+  if (localStorage.getItem("now-user") != null) {
+    $("#addlistModal").modal("show");
+    // 初始化序号和颜色
+    index = Math.floor(Math.random() * (14 - 0 + 1) + 0)
     color = $("#addlistModal .modal-body span").eq(index).css("backgroundColor");
-  })
+    // 颜色选择部分
+    $("#addlistModal .modal-body span").eq(index).html(`<i class="glyphicon glyphicon-ok"></i>`).siblings().html("");
+    $("#addlistModal .modal-body").on("click", "span", function (e) {
+      e.stopPropagation();
+      $(this).html(`<i class="glyphicon glyphicon-ok"></i>`).siblings().html("");
+      index = $(this).index();
+      color = $("#addlistModal .modal-body span").eq(index).css("backgroundColor");
+    })
+  } else {
+    showMes("请先登录！")
+  }
+
 })
 // 点击确认
 $("#addlistModal .confirm").on("click", function (e) {
   e.stopPropagation();
-  if ($("#addlistModal input").val()) {
-    let li = $(`<li class="current"><span style="background-color: ${color};"></span>${$("#addlistModal input").val()}</li>`)
-    $(".scalable .lists li").removeClass("current");
-    $(".scalable .lists").append(li);
-    $("#addlistModal input").val("");
-  }
   $("#addlistModal").modal("hide");
+  if ($("#addlistModal input").val()) {
+    if (getUsersList().includes($("#addlistModal input").val())) {
+      showMes("该清单已存在");
+    } else {
+      let arr = JSON.parse(localStorage.getItem(`${$(".user").html()}-lists`)) || [];
+      if (arr.length >= 10) {
+        showMes("清单数量已达上限")
+      } else {
+        let li = $(`<li class="current" style="display: none"><span style="background-color: ${color};"></span>${$("#addlistModal input").val()}</li>`)
+        $(".scalable .lists li").removeClass("current");
+        $(".scalable .lists").append(li);
+        li.slideDown();
+        // 进行本地存储
+        let arr = JSON.parse(localStorage.getItem(`${$(".user").html()}-lists`)) || [];
+        for (let i = 0, len = arr.length; i < len; i++) {
+          arr[i]["current"] = false;
+        }
+        let obj = {
+          "name": $("#addlistModal input").val(),
+          "color": color,
+          "content": [],
+          "current": true
+        };
+        arr.push(obj)
+        localStorage.setItem(`${$(".user").html()}-lists`, JSON.stringify(arr));
+      }
+    }
+  }
+  $("#addlistModal input").val("");
 })
+
 // 切换效果
 $(".scalable .lists").on("click", "li", function () {
+  let arr = JSON.parse(localStorage.getItem(`${$(".user").html()}-lists`)) || [];
+  for (let i = 0, len = arr.length; i < len; i++) {
+    arr[i]["current"] = false;
+  }
+  arr[$(this).index()]["current"] = true;
+  localStorage.setItem(`${$(".user").html()}-lists`, JSON.stringify(arr));
   $(this).addClass("current").siblings().removeClass("current");
 })
 
