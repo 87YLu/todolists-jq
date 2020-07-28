@@ -89,9 +89,47 @@
 
   <!-- 右边部分 -->
   <div class="main">
+    <h3>todolist</h3>
+    <div class="title">
+      <p><br /></p>
+    </div>
 
+    <input type="text" placeholder="在此处添加任务">
+    <div class="listcontent">
+
+      <ul class="best"></ul>
+      <ul class="better"></ul>
+      <ul class="nopriority"></ul>
+      <div class="hidedone">隐藏已完成</div>
+      <ul class="done"></ul>
+
+
+    </div>
+    <!-- 下边的遮罩 -->
+    <div class="cover"></div>
   </div>
 
+  <!-- 右键菜单 -->
+  <div class="youjian">
+    <div class="mc">
+      <ul>
+        <li>修改内容</li>
+        <li>加入回收站</li>
+        <li>添加优先级 >
+          <div class="yxj">
+            <ul>
+              <li>最高级</li>
+              <li>第二级</li>
+              <li>最低级</li>
+            </ul>
+          </div>
+        </li>
+        <li>删除</li>
+      </ul>
+    </div>
+
+
+  </div>
   <!-- 引入js -->
   <script src="js/jquery-3.5.1.min.js"></script>
   <script src="bootstrap/bootstrap.js"></script>

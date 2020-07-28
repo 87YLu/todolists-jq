@@ -93,11 +93,67 @@ const loadUserListContent = () => {
     }
   }
 }
+// 加载清单标题
+const setTitle = () => {
+  let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`)) || [];
+  for (let i = 0, len = arr.length; i < len; i++) {
+    if (arr[i]["current"]) {
+      $(".main .title").html(`<p style="color: ${arr[i]["color"]}">${arr[i]["name"]}</p>`)
+      break;
+    }
+  }
+}
+// 加载清单的内容
+const showListCon = () => {
+  $(".nopriority").html("");
+  $(".better").html("");
+  $(".best").html("");
+  $(".done").html("");
+  let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`)) || [];
+  for (let i = 0, len = arr.length; i < len; i++) {
+    if (arr[i]["current"]) {
+      for (let j = 0, len = arr[i]["content"].length; j < len; j++) {
+        if (arr[i]["content"][j]["recyclebin"]) {
+          continue;
+        }
+        if (arr[i]["content"][j]["completed"]) {
+          $(".done").prepend(`<li><span><div class="glyphicon glyphicon-ok"></div></span><em>${arr[i]["content"][j]["title"]}</em><i style="display:none">${arr[i]["content"][j]["id"]}</i></li>`);
+          continue;
+        }
+        if (arr[i]["content"][j]["priority"] == "none") {
+          $(".nopriority").prepend(`<li><span></span><em>${arr[i]["content"][j]["title"]}</em><i style="display:none">${arr[i]["content"][j]["id"]}</i></li>`);
+          continue;
+        }
+        if (arr[i]["content"][j]["priority"] == "better") {
+          $(".better").prepend(`<li><span></span><em>${arr[i]["content"][j]["title"]}</em><i style="display:none">${arr[i]["content"][j]["id"]}</i></li>`);
+          continue;
+        }
+        if (arr[i]["content"][j]["priority"] == "best") {
+          $(".best").prepend(`<li><span></span><em>${arr[i]["content"][j]["title"]}</em><i style="display:none">${arr[i]["content"][j]["id"]}</i></li>`);
+          continue;
+        }
+      }
+      break;
+    }
+  }
+}
+// 显示隐藏已完成按钮
+const showHideBtn = () => {
+  if ($(".done").children().length) {
+    $(".hidedone").css("display", "block");
+  } else {
+    $(".hidedone").css("display", "none");
+  }
+}
 
 // 初始化用户名和清单
 $(".user").html(localStorage.getItem("now-user") || "未登录");
 loadUsersManagementList();
 loadUserListContent();
+setTitle();
+showListCon();
+showHideBtn();
+
 // 控制组件出现
 $(".user").on("click", function () {
   $("#users-management").modal("show");
@@ -166,6 +222,8 @@ $("#logon .logon-btn").on("click", function () {
         clearInputData();
         loadUsersManagementList();
         loadUserListContent();
+        setTitle();
+        showListCon();
       }
       // 密码错误
       else {
@@ -210,6 +268,8 @@ $(".users").on("click", "li", function () {
   $(".user").html(str);
   $("#users-management").modal("hide");
   loadUserListContent();
+  setTitle();
+  showListCon();
 });
 // 注销
 $(".users").on("click", "span", function (e) {
@@ -227,6 +287,8 @@ $(".users").on("click", "span", function (e) {
     localStorage.removeItem("now-user");
     $(".user").html("未登录");
     loadUserListContent();
+    $(".main .title").html("<p><br /></p>");
+    showListCon();
   };
 });
 
@@ -247,8 +309,12 @@ const getUsersList = () => {
   return arr2;
 }
 // 点击新建清单
-let index, color;
+let index, color, flag2 = 0;
 $(".addlist").on("click", function () {
+  if (flag2 == 1) {
+    $("#addlistModal .modal-body").off("click");
+    flag2 = 0
+  }
   if (localStorage.getItem("now-user") != null) {
     $("#addlistModal").modal("show");
     // 初始化序号和颜色
@@ -257,6 +323,8 @@ $(".addlist").on("click", function () {
     // 颜色选择部分
     $("#addlistModal .modal-body span").eq(index).html(`<i class="glyphicon glyphicon-ok"></i>`).siblings().html("");
     $("#addlistModal .modal-body").on("click", "span", function (e) {
+      flag2 = 1;
+      console.log(1)
       e.stopPropagation();
       $(this).html(`<i class="glyphicon glyphicon-ok"></i>`).siblings().html("");
       index = $(this).index();
@@ -265,8 +333,8 @@ $(".addlist").on("click", function () {
   } else {
     showMes("请先登录！")
   }
+});
 
-})
 // 点击确认
 $("#addlistModal .confirm").on("click", function (e) {
   e.stopPropagation();
@@ -302,15 +370,168 @@ $("#addlistModal .confirm").on("click", function (e) {
   $("#addlistModal input").val("");
 })
 
-// 切换效果
+// 切换清单
 $(".scalable .lists").on("click", "li", function () {
   let arr = JSON.parse(localStorage.getItem(`${$(".user").html()}-lists`)) || [];
   for (let i = 0, len = arr.length; i < len; i++) {
     arr[i]["current"] = false;
   }
   arr[$(this).index()]["current"] = true;
+  $(".main .title").html(`<p style="color: ${arr[$(this).index()]["color"]}">${arr[$(this).index()]["name"]}</p>`);
   localStorage.setItem(`${$(".user").html()}-lists`, JSON.stringify(arr));
   $(this).addClass("current").siblings().removeClass("current");
+  showListCon();
+  showHideBtn();
 })
 
 // !! 新建清单部分结束
+
+// !! 添加项
+$(".main input").on("blur", function () {
+  if ($(this).val().trim()) {
+    let id = "";
+    for (let i = 0; i < 16; i++) {
+      id += Math.floor(Math.random() * (9 - 0 + 1) + 0);
+    }
+    let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`)) || [];
+    for (let i = 0, len = arr.length; i < len; i++) {
+      if (arr[i]["current"]) {
+        arr[i]["content"].push({
+          "title": $(this).val().trim(),
+          "completed": false,
+          "priority": "none",
+          "recyclebin": false,
+          "id": id
+        });
+        localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+        break;
+      }
+    }
+    let li = $(`<li style="display: none"><span></span><em>${$(this).val().trim()}</em><i style="display: none">${id}</i></li>`);
+    $(".nopriority").prepend(li);
+    li.slideDown(function () {
+      showListCon();
+    });
+  }
+  $(this).val("");
+})
+
+// 操作项
+// 封装函数
+const isCompleted = (id, value) => {
+  let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`)) || [];
+  for (let i = 0, len = arr.length; i < len; i++) {
+    if (arr[i]["current"]) {
+      for (let j = 0, len = arr[i]["content"].length; j < len; j++) {
+        if (id == arr[i]["content"][j]["id"]) {
+          arr[i]["content"][j]["completed"] = value;
+          localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+          return [i, j]
+        }
+      }
+      break;
+    }
+  }
+}
+
+$(".listcontent").on("click", "li", function () {
+  // 未完成 -> 完成
+  if ($(this).parent().attr("class") != "done") {
+    isCompleted($(this).children().eq(2).html(), true);
+  }
+  // 完成 -> 未完成
+  else {
+    isCompleted($(this).children().eq(2).html(), false);
+  }
+  showListCon();
+  showHideBtn();
+})
+
+// 显示或隐藏已完成
+let flag = 1;
+$(".hidedone").on("click", function () {
+  if (flag) {
+    flag = 0;
+    if ($(this).html() == "显示已完成") {
+      $(this).html("隐藏已完成");
+      $(".done").slideDown(function () {
+        flag = 1;
+      });
+    } else {
+      $(this).html("显示已完成");
+      $(".done").slideUp(function () {
+        flag = 1;
+      });
+    }
+  }
+})
+
+// 右键菜单
+$("html").on("contextmenu", function (e) {
+  e.preventDefault();
+})
+const setRhList = (rhlist, x, y) => {
+  if (y / document.body.clientHeight < 0.75) {
+    rhlist.css({
+      left: x + 'px',
+      top: y + 'px'
+    })
+  } else {
+    rhlist.css({
+      left: x - parseInt(rhlist.css("width")) + 'px',
+      top: y - parseInt(rhlist.css("height")) + 'px'
+    })
+  }
+  rhlist.fadeIn(100);
+  $("body").on('click', () => {
+    rhlist.fadeOut(100);
+  });
+}
+
+// 查找位置
+const findLocation = (value) => {
+  let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`)) || [];
+  for (let i = 0, len = arr.length; i < len; i++) {
+    if (arr[i]["current"]) {
+      for (let j = 0, len = arr[i]["content"].length; j < len; j++) {
+        if (value.children().eq(2).html() == arr[i]["content"][j]["id"]) {
+          return [i, j];
+        }
+      }
+      break;
+    }
+  }
+}
+
+// 右键功能部分
+$(".listcontent").on("contextmenu", "li", function (e) {
+  setRhList($(".youjian"), e.clientX, e.clientY);
+  let loca = findLocation($(this));
+  let temp = $(this).parent().attr("class");
+  let index = $(this).index();
+
+  // 修改功能
+  $(".mc ul li:eq(0)").one("click", function () {
+    let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
+    $(`.${temp}`).children().eq(index).html("<input>")
+    $(`.${temp}`).children().eq(index).children().val(arr[loca[0]]["content"][loca[1]]["title"])
+    $(`.${temp}`).children().eq(index).children().focus();
+    $(`.${temp}`).children().eq(index).children().on("blur", function () {
+      if (!$(`.${temp}`).children().eq(index).children().val().trim()) {
+        $(`.${temp}`).children().eq(index).children().val(arr[loca[0]]["content"][loca[1]]["title"]);
+      } else {
+        arr[loca[0]]["content"][loca[1]]["title"] = $(`.${temp}`).children().eq(index).children().val().trim();
+        localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+      }
+      showListCon();
+    })
+  })
+  // 删除功能
+  $(".mc ul li:eq(6)").one("click", function () {
+    let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
+    arr[loca[0]]["content"].splice(loca[1], 1);
+    localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+    showListCon();
+    showHideBtn();
+  })
+})
