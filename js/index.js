@@ -101,14 +101,14 @@ const setTitle = () => {
     if (sessionStorage.getItem("recyclebin") == "true") {
       for (let i = 0, len = arr.length; i < len; i++) {
         if (arr[i]["current"]) {
-          $(".main .title").html(`<p style="color: ${arr[i]["color"]}">${arr[i]["name"]}-回收站</p>`)
+          $(".main .title").html(`<p style="color: ${arr[i]["color"]}">${arr[i]["name"]} ·· 回收站</p>`)
           break;
         }
       }
     } else {
       for (let i = 0, len = arr.length; i < len; i++) {
         if (arr[i]["current"]) {
-          $(".main .title").html(`<p style="color: ${arr[i]["color"]}">${arr[i]["name"]}</p>`)
+          $(".main .title").html(`<p style="color: ${arr[i]["color"]}">${arr[i]["name"]} ·· ${$(".done li").length} / ${$(".listcontent li").length}</p>`)
           break;
         }
       }
@@ -123,7 +123,7 @@ const showListCon = () => {
   $(".best").html("");
   $(".done").html("");
   $(".bin-con").html("");
-  if ($(".hidedone").val() == "隐藏已完成") {
+  if ($(".hidedone").html() == "隐藏已完成") {
     $(".done").css("display", "block");
   } else {
     $(".done").css("display", "none");
@@ -199,8 +199,8 @@ const setBin = () => {
 $(".user").html(localStorage.getItem("now-user") || "未登录");
 loadUsersManagementList();
 loadUserListContent();
-setTitle();
 showListCon();
+setTitle();
 showHideBtn();
 setBin();
 
@@ -272,8 +272,9 @@ $("#logon .logon-btn").on("click", function () {
         clearInputData();
         loadUsersManagementList();
         loadUserListContent();
-        setTitle();
         showListCon();
+        setTitle();
+        showHideBtn();
       }
       // 密码错误
       else {
@@ -318,8 +319,8 @@ $(".users").on("click", "li", function () {
   $(".user").html(str);
   $("#users-management").modal("hide");
   loadUserListContent();
-  setTitle();
   showListCon();
+  setTitle();
 });
 // 注销
 $(".users").on("click", "span", function (e) {
@@ -360,12 +361,16 @@ const getUsersList = () => {
 // 点击新建清单
 let index, color, flag2 = 0;
 $(".addlist").on("click", function () {
+  // 解绑颜色选择函数
   if (flag2 == 1) {
     $("#addlistModal .modal-body").off("click");
     flag2 = 0
   }
   if (localStorage.getItem("now-user") != null) {
     $("#addlistModal").modal("show");
+    setTimeout(function () {
+      $("#addlistModal input").focus();
+    }, 1000)
     // 初始化序号和颜色
     index = Math.floor(Math.random() * (14 - 0 + 1) + 0)
     color = $("#addlistModal .modal-body span").eq(index).css("backgroundColor");
@@ -414,8 +419,8 @@ $("#addlistModal .confirm").on("click", function (e) {
         };
         arr.push(obj)
         localStorage.setItem(`${$(".user").html()}-lists`, JSON.stringify(arr));
-        setTitle();
         showListCon();
+        setTitle();
       }
     }
   }
@@ -434,9 +439,9 @@ $(".scalable .lists").on("click", "li", function () {
   $(".main input").css("display", "block");
   $(".listcontent").css("display", "block");
   $(".bin-con").css("display", "none");
-  setTitle();
   showListCon();
   showHideBtn();
+  setTitle();
 })
 
 // !! 新建清单部分结束
@@ -444,29 +449,36 @@ $(".scalable .lists").on("click", "li", function () {
 // !! 项操作开始
 // 添加项
 $(".main input").on("blur", function () {
-  if ($(this).val().trim()) {
-    let id = "";
-    for (let i = 0; i < 16; i++) {
-      id += Math.floor(Math.random() * (9 - 0 + 1) + 0);
-    }
-    let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`)) || [];
-    for (let i = 0, len = arr.length; i < len; i++) {
-      if (arr[i]["current"]) {
-        arr[i]["content"].push({
-          "title": $(this).val().trim(),
-          "completed": false,
-          "priority": "none",
-          "recyclebin": false,
-          "id": id
-        });
-        localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
-        break;
+  if (localStorage.getItem(`${localStorage.getItem("now-user")}-lists`) != null &&
+    localStorage.getItem(`${localStorage.getItem("now-user")}-lists`) != "[]") {
+    if ($(this).val().trim()) {
+      let id = "";
+      for (let i = 0; i < 16; i++) {
+        id += Math.floor(Math.random() * (9 - 0 + 1) + 0);
       }
+      let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`)) || [];
+      for (let i = 0, len = arr.length; i < len; i++) {
+        if (arr[i]["current"]) {
+          arr[i]["content"].push({
+            "title": $(this).val().trim(),
+            "completed": false,
+            "priority": "none",
+            "recyclebin": false,
+            "id": id
+          });
+          localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+          break;
+        }
+      }
+      let li = $(`<li style="display: none"><span></span><em>${$(this).val().trim()}</em><i style="display: none">${id}</i></li>`);
+      $(".nopriority").prepend(li);
+      li.slideDown(function () {
+        showListCon();
+        setTitle();
+      });
     }
-    let li = $(`<li style="display: none"><span></span><em>${$(this).val().trim()}</em><i style="display: none">${id}</i></li>`);
-    $(".nopriority").prepend(li);
-    li.slideDown();
-    showListCon();
+  } else {
+    showMes("请先创建一个清单")
   }
   $(this).val("");
 })
@@ -500,6 +512,7 @@ $(".listcontent").on("click", "li", function () {
   }
   showListCon();
   showHideBtn();
+  setTitle();
 })
 
 // 显示或隐藏已完成
@@ -587,6 +600,7 @@ $(".mc ul li:eq(6)").on("click", function () {
   arr[loca[0]]["content"].splice(loca[1], 1);
   localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
   showListCon();
+  setTitle();
   showHideBtn();
 })
 
@@ -596,6 +610,7 @@ $(".mc ul li:eq(1)").on("click", function () {
   arr[loca[0]]["content"][loca[1]]["recyclebin"] = true;
   localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
   showListCon();
+  setTitle();
 })
 // 优先级功能
 // 最高级
@@ -667,8 +682,8 @@ $(".youjian2 ul li:eq(1)").on("click", function () {
       arr[arr.length - 1]["current"] = true;
       localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
     }
-    setTitle();
     showListCon();
+    setTitle();
     loadUserListContent();
   } else {
     arr.splice(ind2, 1);
@@ -690,8 +705,8 @@ $(".recyclebin").on({
       sessionStorage.setItem("recyclebin", "false");
     }
     setBin();
-    setTitle();
     showListCon();
+    setTitle();
   },
   // 开启功能菜单
   "contextmenu": function () {
@@ -732,8 +747,10 @@ $(".handle li:eq(1)").on("click", function () {
   }
   localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
   showListCon();
+  setTitle();
 })
 
+// 清除已完成
 let dbSure = 0;
 $(".hidedone").on("contextmenu", function () {
   dbSure++;
@@ -744,15 +761,30 @@ $(".hidedone").on("contextmenu", function () {
     dbSure = 0;
     $(".hidedone").fadeOut();
     $(".hidedone").val("隐藏已完成");
-    $(".done").fadeOut();
+    $(".done").fadeOut(function () {
+      let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
+      for (let i = 0, len = $(".done").children().length; i < len; i++) {
+        let arr2 = findLocation($(".done").children().eq(i))
+        arr[arr2[0]]["content"].splice(arr2[1], 1);
+      }
+      localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
 
-    let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
-    for (let i = 0, len = $(".done").children().length; i < len; i++) {
-      let arr2 = findLocation($(".done").children().eq(i))
-      arr[arr2[0]]["content"].splice(arr2[1], 1);
+      showListCon();
+      setTitle();
+      showHideBtn();
+    });
+  }
+})
+
+// 优化用户体验部分
+$("html").on("keydown", function (e) {
+  if (e.keyCode == 13) {
+    if ($("#addlistModal").css("display") == "block") {
+      $("#addlistModal .confirm").click();
+    } else if ($("#logon").css("display") == "block") {
+      $(".logon-btn").click();
+    } else {
+      $("input").blur();
     }
-    localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
-    showHideBtn();
-    showListCon();
   }
 })
