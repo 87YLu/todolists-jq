@@ -95,10 +95,14 @@ const loadUserListContent = () => {
 // 加载清单标题
 const setTitle = () => {
   let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`)) || [];
-  for (let i = 0, len = arr.length; i < len; i++) {
-    if (arr[i]["current"]) {
-      $(".main .title").html(`<p style="color: ${arr[i]["color"]}">${arr[i]["name"]}</p>`)
-      break;
+  if (!arr.length) {
+    $(".main .title").html(`<p><br /></p>`)
+  } else {
+    for (let i = 0, len = arr.length; i < len; i++) {
+      if (arr[i]["current"]) {
+        $(".main .title").html(`<p style="color: ${arr[i]["color"]}">${arr[i]["name"]}</p>`)
+        break;
+      }
     }
   }
 }
@@ -117,17 +121,15 @@ const showListCon = () => {
         }
         if (arr[i]["content"][j]["completed"]) {
           if (arr[i]["content"][j]["priority"] == "none") {
-            $(".done").prepend(`<li><span><div class="glyphicon glyphicon-ok"></div></span><em>${arr[i]["content"][j]["title"]}</em><i style="display:none">${arr[i]["content"][j]["id"]}</i></li>`);
+            $(".done").prepend(`<li><span><div class="glyphicon glyphicon-ok"></div></span><em style="text-decoration: line-through; color: #ccc">${arr[i]["content"][j]["title"]}</em><i style="display:none">${arr[i]["content"][j]["id"]}</i></li>`);
             continue;
-          }
-          if (arr[i]["content"][j]["priority"] == "better") {
-            $(".done").prepend(`<li><span><div class="glyphicon glyphicon-ok"></div></span><em>${arr[i]["content"][j]["title"]}</em><i style="display:none">${arr[i]["content"][j]["id"]}</i><i class="
-            glyphicon glyphicon-star-empty"></i></li>`);
+          } else if (arr[i]["content"][j]["priority"] == "better") {
+            $(".done").prepend(`<li><span><div class="glyphicon glyphicon-ok"></div></span><em style="text-decoration: line-through; color: #ccc">${arr[i]["content"][j]["title"]}</em><i style="display:none">${arr[i]["content"][j]["id"]}</i><i class="
+            glyphicon glyphicon-star-empty" style="color: #ccc"></i></li>`);
             continue;
-          }
-          if (arr[i]["content"][j]["priority"] == "best") {
-            $(".done").prepend(`<li><span><div class="glyphicon glyphicon-ok"></div></span><em>${arr[i]["content"][j]["title"]}</em><i style="display:none">${arr[i]["content"][j]["id"]}</i><i class="
-            glyphicon glyphicon-star"></i></li>`);
+          } else {
+            $(".done").prepend(`<li><span><div class="glyphicon glyphicon-ok"></div></span><em style="text-decoration: line-through; color: #ccc">${arr[i]["content"][j]["title"]}</em><i style="display:none">${arr[i]["content"][j]["id"]}</i><i class="
+            glyphicon glyphicon-star" style="color: #ccc"></i></li>`);
             continue;
           }
         }
@@ -336,7 +338,6 @@ $(".addlist").on("click", function () {
     $("#addlistModal .modal-body span").eq(index).html(`<i class="glyphicon glyphicon-ok"></i>`).siblings().html("");
     $("#addlistModal .modal-body").on("click", "span", function (e) {
       flag2 = 1;
-      console.log(1)
       e.stopPropagation();
       $(this).html(`<i class="glyphicon glyphicon-ok"></i>`).siblings().html("");
       index = $(this).index();
@@ -358,6 +359,8 @@ $("#addlistModal .confirm").on("click", function (e) {
       let arr = JSON.parse(localStorage.getItem(`${$(".user").html()}-lists`)) || [];
       if (arr.length >= 10) {
         showMes("清单数量已达上限")
+      } else if ($("#addlistModal input").val().length >= 10) {
+        showMes("清单命名不得超过十个中文或数字")
       } else {
         let li = $(`<li class="current" style="display: none"><span style="background-color: ${color};"></span>${$("#addlistModal input").val()}</li>`)
         $(".scalable .lists li").removeClass("current");
@@ -376,6 +379,8 @@ $("#addlistModal .confirm").on("click", function (e) {
         };
         arr.push(obj)
         localStorage.setItem(`${$(".user").html()}-lists`, JSON.stringify(arr));
+        setTitle();
+        showListCon();
       }
     }
   }
@@ -422,9 +427,8 @@ $(".main input").on("blur", function () {
     }
     let li = $(`<li style="display: none"><span></span><em>${$(this).val().trim()}</em><i style="display: none">${id}</i></li>`);
     $(".nopriority").prepend(li);
-    li.slideDown(function () {
-      showListCon();
-    });
+    li.slideDown();
+    showListCon();
   }
   $(this).val("");
 })
@@ -532,11 +536,10 @@ $(".listcontent").on("contextmenu", "li", function (e) {
 // 修改功能
 $(".mc ul li:eq(0)").on("click", function () {
   let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
-  console.log(1)
   $(`.${cla}`).children().eq(ind).html("<input>")
   $(`.${cla}`).children().eq(ind).children().val(arr[loca[0]]["content"][loca[1]]["title"])
   $(`.${cla}`).children().eq(ind).children().focus();
-  $(`.${cla}`).children().eq(ind).children().on("blur", function () {
+  $(`.${cla}`).children().eq(ind).children().one("blur", function () {
     if (!$(`.${cla}`).children().eq(ind).children().val().trim()) {
       $(`.${cla}`).children().eq(ind).children().val(arr[loca[0]]["content"][loca[1]]["title"]);
     } else {
@@ -592,3 +595,55 @@ $(".mc ul li:eq(5)").on("click", function () {
   showListCon();
 })
 // !! 清单项右键功能结束
+
+// !! 清单右键功能开始
+let ind2, str1, str2;;
+$(".lists").on("contextmenu", "li", function (e) {
+  if ($(this).children().eq(0)[0].nodeName.toLowerCase() != "input") {
+    setRhList($(".youjian2"), e.clientX, e.clientY);
+    ind2 = $(this).index();
+    str1 = $(this).html().split("</span>")[0];
+    str2 = $(this).html().split("</span>")[1];
+  }
+})
+// 重命名
+$(".youjian2 ul li:eq(0)").on("click", function () {
+  $(`.lists li:eq(${ind2})`).html(`${str1}</span><input>`)
+  $(`.lists li:eq(${ind2})`).children().eq(1).val(str2);
+  $(`.lists li:eq(${ind2})`).children().eq(1).focus();
+  $(`.lists li:eq(${ind2})`).children().eq(1).one("blur", function () {
+    if (!$(`.lists li:eq(${ind2})`).children().eq(1).val().trim()) {
+      $(`.lists li:eq(${ind2})`).html(`${str1}</span>${str2}`);
+    } else if ($(`.lists li:eq(${ind2})`).children().eq(1).val().trim().length >= 10) {
+      showMes("清单命名不得超过十个中文或数字");
+      $(`.lists li:eq(${ind2})`).html(`${str1}</span>${str2}`);
+    } else {
+      let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
+      arr[ind2]["name"] = $(`.lists li:eq(${ind2})`).children().eq(1).val().trim();
+      localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+      loadUserListContent();
+      setTitle();
+    }
+  })
+})
+
+// 删除
+$(".youjian2 ul li:eq(1)").on("click", function () {
+  let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
+  if (arr[ind2]["current"]) {
+    arr.splice(ind2, 1);
+    if (!arr.length) {
+      localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+    } else {
+      arr[arr.length - 1]["current"] = true;
+      localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+    }
+    setTitle();
+    showListCon();
+    loadUserListContent();
+  } else {
+    arr.splice(ind2, 1);
+    localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+    loadUserListContent();
+  }
+})
