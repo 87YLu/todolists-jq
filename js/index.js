@@ -123,6 +123,11 @@ const showListCon = () => {
   $(".best").html("");
   $(".done").html("");
   $(".bin-con").html("");
+  if ($(".hidedone").val() == "隐藏已完成") {
+    $(".done").css("display", "block");
+  } else {
+    $(".done").css("display", "none");
+  }
   if (sessionStorage.getItem("recyclebin") == "true") {
     $(".listcontent").css("display", "none");
     $(".main input").css("display", "none");
@@ -498,22 +503,13 @@ $(".listcontent").on("click", "li", function () {
 })
 
 // 显示或隐藏已完成
-let flag = 1;
 $(".hidedone").on("click", function () {
-  if (flag) {
-    flag = 0;
-    if ($(this).html() == "显示已完成") {
-      $(this).html("隐藏已完成");
-      $(".done").slideDown(function () {
-        flag = 1;
-      });
-    } else {
-      $(this).html("显示已完成");
-      $(".done").slideUp(function () {
-        flag = 1;
-      });
-    }
+  if ($(this).html() == "显示已完成") {
+    $(this).html("隐藏已完成");
+  } else {
+    $(this).html("显示已完成");
   }
+  $(".done").slideToggle();
 })
 // !! 项操作结束
 
@@ -681,8 +677,9 @@ $(".youjian2 ul li:eq(1)").on("click", function () {
   }
 });
 
-// 回收站
+// 回收站具体功能
 $(".recyclebin").on({
+  // 开启回收站
   "click": function () {
     // 回收站处于关闭状态
     if (sessionStorage.getItem("recyclebin") != "true") {
@@ -696,11 +693,12 @@ $(".recyclebin").on({
     setTitle();
     showListCon();
   },
+  // 开启功能菜单
   "contextmenu": function () {
     $(".handle").slideDown(function () {
       let timer = setTimeout(function () {
         $(".handle").slideUp();
-      }, 5000);
+      }, 4000);
       $(".handle").one("mouseenter", function () {
         clearTimeout(timer);
       })
@@ -711,4 +709,50 @@ $(".handle").on("mouseleave", function () {
   setTimeout(function () {
     $(".handle").slideUp();
   }, 1000)
+})
+// 清空回收站
+$(".handle li:eq(0)").on("click", function () {
+  $(".handle").slideUp();
+  let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
+  for (let i = 0, len = $(".bin-con").children().length; i < len; i++) {
+    let arr2 = findLocation($(".bin-con").children().eq(i))
+    arr[arr2[0]]["content"].splice(arr2[1], 1);
+  }
+  localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+  showListCon();
+})
+
+// 恢复所有项目
+$(".handle li:eq(1)").on("click", function () {
+  $(".handle").slideUp();
+  let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
+  for (let i = 0, len = $(".bin-con").children().length; i < len; i++) {
+    let arr2 = findLocation($(".bin-con").children().eq(i));
+    arr[arr2[0]]["content"][arr2[1]]["recyclebin"] = false;
+  }
+  localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+  showListCon();
+})
+
+let dbSure = 0;
+$(".hidedone").on("contextmenu", function () {
+  dbSure++;
+  setTimeout(function () {
+    dbSure = 0
+  }, 200);
+  if (dbSure == 2) {
+    dbSure = 0;
+    $(".hidedone").fadeOut();
+    $(".hidedone").val("隐藏已完成");
+    $(".done").fadeOut();
+
+    let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
+    for (let i = 0, len = $(".done").children().length; i < len; i++) {
+      let arr2 = findLocation($(".done").children().eq(i))
+      arr[arr2[0]]["content"].splice(arr2[1], 1);
+    }
+    localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+    showHideBtn();
+    showListCon();
+  }
 })

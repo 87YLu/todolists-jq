@@ -491,6 +491,7 @@ body {
 }
 
 .main .listcontent .hidedone {
+  display: none;
   margin: 0 auto;
   text-align: center;
   width: 100px;
