@@ -98,25 +98,46 @@ const setTitle = () => {
   if (!arr.length) {
     $(".main .title").html(`<p><br /></p>`)
   } else {
-    for (let i = 0, len = arr.length; i < len; i++) {
-      if (arr[i]["current"]) {
-        $(".main .title").html(`<p style="color: ${arr[i]["color"]}">${arr[i]["name"]}</p>`)
-        break;
+    if (sessionStorage.getItem("recyclebin") == "true") {
+      for (let i = 0, len = arr.length; i < len; i++) {
+        if (arr[i]["current"]) {
+          $(".main .title").html(`<p style="color: ${arr[i]["color"]}">${arr[i]["name"]}-回收站</p>`)
+          break;
+        }
+      }
+    } else {
+      for (let i = 0, len = arr.length; i < len; i++) {
+        if (arr[i]["current"]) {
+          $(".main .title").html(`<p style="color: ${arr[i]["color"]}">${arr[i]["name"]}</p>`)
+          break;
+        }
       }
     }
   }
 }
+
 // 加载清单的内容
 const showListCon = () => {
   $(".nopriority").html("");
   $(".better").html("");
   $(".best").html("");
   $(".done").html("");
+  $(".bin-con").html("");
+  if (sessionStorage.getItem("recyclebin") == "true") {
+    $(".listcontent").css("display", "none");
+    $(".main input").css("display", "none");
+    $(".bin-con").css("display", "block");
+  } else {
+    $(".listcontent").css("display", "block");
+    $(".main input").css("display", "block");
+    $(".bin-con").css("display", "none");
+  }
   let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`)) || [];
   for (let i = 0, len = arr.length; i < len; i++) {
     if (arr[i]["current"]) {
       for (let j = 0, len = arr[i]["content"].length; j < len; j++) {
         if (arr[i]["content"][j]["recyclebin"]) {
+          $(".bin-con").prepend(`<li><span><div class="glyphicon glyphicon-remove"></div></span><em>${arr[i]["content"][j]["title"]}</em><i style="display:none">${arr[i]["content"][j]["id"]}</i></li>`);
           continue;
         }
         if (arr[i]["content"][j]["completed"]) {
@@ -160,6 +181,14 @@ const showHideBtn = () => {
     $(".hidedone").css("display", "none");
   }
 }
+// 设置回收站状态
+const setBin = () => {
+  if (sessionStorage.getItem("recyclebin") == "true") {
+    $(".recyclebin").css("border", "2px solid #111").children().eq(0).css("color", "#111");
+  } else {
+    $(".recyclebin").css("border", "1px solid #ccc").children().eq(0).css("color", "#ccc");
+  }
+}
 
 // 初始化用户名和清单
 $(".user").html(localStorage.getItem("now-user") || "未登录");
@@ -168,6 +197,7 @@ loadUserListContent();
 setTitle();
 showListCon();
 showHideBtn();
+setBin();
 
 // 控制组件出现
 $(".user").on("click", function () {
@@ -394,9 +424,12 @@ $(".scalable .lists").on("click", "li", function () {
     arr[i]["current"] = false;
   }
   arr[$(this).index()]["current"] = true;
-  $(".main .title").html(`<p style="color: ${arr[$(this).index()]["color"]}">${arr[$(this).index()]["name"]}</p>`);
   localStorage.setItem(`${$(".user").html()}-lists`, JSON.stringify(arr));
   $(this).addClass("current").siblings().removeClass("current");
+  $(".main input").css("display", "block");
+  $(".listcontent").css("display", "block");
+  $(".bin-con").css("display", "none");
+  setTitle();
   showListCon();
   showHideBtn();
 })
@@ -646,4 +679,36 @@ $(".youjian2 ul li:eq(1)").on("click", function () {
     localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
     loadUserListContent();
   }
+});
+
+// 回收站
+$(".recyclebin").on({
+  "click": function () {
+    // 回收站处于关闭状态
+    if (sessionStorage.getItem("recyclebin") != "true") {
+      sessionStorage.setItem("recyclebin", "true");
+    }
+    // 回收站处于开启状态
+    else {
+      sessionStorage.setItem("recyclebin", "false");
+    }
+    setBin();
+    setTitle();
+    showListCon();
+  },
+  "contextmenu": function () {
+    $(".handle").slideDown(function () {
+      let timer = setTimeout(function () {
+        $(".handle").slideUp();
+      }, 5000);
+      $(".handle").one("mouseenter", function () {
+        clearTimeout(timer);
+      })
+    });
+  }
+})
+$(".handle").on("mouseleave", function () {
+  setTimeout(function () {
+    $(".handle").slideUp();
+  }, 1000)
 })

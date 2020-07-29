@@ -60,6 +60,15 @@
     <ul class="lists">
     </ul>
 
+    <!-- 回收站 -->
+    <div class="recyclebin">
+      <span class="glyphicon glyphicon-trash"></span>
+    </div>
+    <div class="handle">
+      <li>清空回收站</li>
+      <li>恢复所有项</li>
+    </div>
+
     <!-- 添加清单模态框开始 -->
     <div type="button" class="addlist">+ 新建清单</div>
     <div class="modal fade" id="addlistModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -95,16 +104,18 @@
     </div>
 
     <input type="text" placeholder="在此处添加任务">
+    <!-- 清单内容 -->
     <div class="listcontent">
-
       <ul class="best"></ul>
       <ul class="better"></ul>
       <ul class="nopriority"></ul>
       <div class="hidedone">隐藏已完成</div>
       <ul class="done"></ul>
-
-
     </div>
+    <!-- 回收站内容 -->
+    <ul class="bin-con">
+    </ul>
+
     <!-- 下边的遮罩 -->
     <div class="cover"></div>
   </div>
