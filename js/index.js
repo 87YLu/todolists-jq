@@ -425,8 +425,8 @@ $("#addlistModal .confirm").on("click", function (e) {
       let arr = JSON.parse(localStorage.getItem(`${$(".user").html()}-lists`)) || [];
       if (arr.length >= 10) {
         showMes("清单数量已达上限")
-      } else if ($("#addlistModal input").val().length >= 10) {
-        showMes("清单命名不得超过十个中文或数字")
+      } else if ($("#addlistModal input").val().length >= 30) {
+        showMes("清单命名不得超过<br />三十个字符")
       } else {
         let li = $(`<li class="current" style="display: none"><span style="background-color: ${color};"></span>${$("#addlistModal input").val()}</li>`)
         $(".scalable .lists li").removeClass("current");
@@ -684,8 +684,8 @@ $(".youjian2 ul li:eq(0)").on("click", function () {
   $(`.lists li:eq(${ind2})`).children().eq(1).one("blur", function () {
     if (!$(`.lists li:eq(${ind2})`).children().eq(1).val().trim()) {
       $(`.lists li:eq(${ind2})`).html(`${str1}</span>${str2}`);
-    } else if ($(`.lists li:eq(${ind2})`).children().eq(1).val().trim().length >= 10) {
-      showMes("清单命名不得超过十个中文或数字");
+    } else if ($(`.lists li:eq(${ind2})`).children().eq(1).val().trim().length >= 30) {
+      showMes("清单命名不得超过<br />三十个字符");
       $(`.lists li:eq(${ind2})`).html(`${str1}</span>${str2}`);
     } else {
       let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
