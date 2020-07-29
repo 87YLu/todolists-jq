@@ -1,3 +1,29 @@
+// 启用live2d
+$(function () {
+  $("#live2dcanvas").attr("style", "position: fixed; opacity: 1; left: 0px; bottom: 0px; z-index: 1; pointer-events: none;");
+})
+
+L2Dwidget.init({
+  "model": {
+    jsonPath: "https://unpkg.com/live2d-widget-model-z16/assets/z16.model.json", //这里改模型，前面后面都要改
+    "scale": 1
+  },
+  "display": {
+    "position": "right", //设置看板娘的上下左右位置
+    "width": 100,
+    "height": 300,
+    "hOffset": 0,
+    "vOffset": -100
+  },
+  "mobile": {
+    "show": true,
+    "scale": 0.5
+  },
+  "react": {
+    "opacityDefault": 1, //设置透明度
+    "opacityOnHover": 0.2
+  }
+});
 // !! 左侧宽度调整开始
 let startX, startWidth;
 
