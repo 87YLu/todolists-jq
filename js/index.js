@@ -637,21 +637,27 @@ $(".mc ul li:eq(0)").on("click", function () {
 
 // 删除功能
 $(".mc ul li:eq(6)").on("click", function () {
-  let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
-  arr[loca[0]]["content"].splice(loca[1], 1);
-  localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
-  showListCon();
-  setTitle();
-  showHideBtn();
+  $(`.${cla} li:eq(${ind})`).hide(function () {
+    let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
+    arr[loca[0]]["content"].splice(loca[1], 1);
+    localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+    showListCon();
+    setTitle();
+    showHideBtn();
+  })
+
 })
 
-// 回收站
+// 加入回收站
 $(".mc ul li:eq(1)").on("click", function () {
-  let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
-  arr[loca[0]]["content"][loca[1]]["recyclebin"] = true;
-  localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
-  showListCon();
-  setTitle();
+  $(`.${cla} li:eq(${ind})`).fadeOut(function () {
+    let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
+    arr[loca[0]]["content"][loca[1]]["recyclebin"] = true;
+    localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+    showListCon();
+    setTitle();
+  })
+
 })
 // 优先级功能
 // 最高级
@@ -731,6 +737,7 @@ $(".youjian2 ul li:eq(1)").on("click", function () {
 });
 
 // 回收站具体功能
+let flag4 = 1;
 $(".recyclebin").on({
   // 开启回收站
   "click": function () {
@@ -748,44 +755,58 @@ $(".recyclebin").on({
   },
   // 开启功能菜单
   "contextmenu": function () {
-    $(".handle").slideDown(function () {
-      let timer = setTimeout(function () {
-        $(".handle").slideUp();
-      }, 4000);
-      $(".handle").one("mouseenter", function () {
-        clearTimeout(timer);
-      })
-    });
+    if (flag4) {
+      flag4 = 0;
+      $(".handle").slideDown(function () {
+        let timer = setTimeout(function () {
+          $(".handle").slideUp(function () {
+            flag4 = 1;
+          });
+        }, 4000);
+        $(".handle").one("mouseenter", function () {
+          clearTimeout(timer);
+        })
+        $(".handle").one("mouseleave", function () {
+          $(".handle").slideUp(function () {
+            flag4 = 1;
+          });
+        })
+      });
+    }
   }
 })
-$(".handle").on("mouseleave", function () {
-  setTimeout(function () {
-    $(".handle").slideUp();
-  }, 1000)
-})
+
 // 清空回收站
 $(".handle li:eq(0)").on("click", function () {
-  $(".handle").slideUp();
-  let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
-  for (let i = 0, len = $(".bin-con").children().length; i < len; i++) {
-    let arr2 = findLocation($(".bin-con").children().eq(i))
-    arr[arr2[0]]["content"].splice(arr2[1], 1);
-  }
-  localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
-  showListCon();
+  $(".handle").slideUp(function () {
+    flag4 = 1;
+  });
+  $(".bin-con").fadeOut(function () {
+    let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
+    for (let i = 0, len = $(".bin-con").children().length; i < len; i++) {
+      let arr2 = findLocation($(".bin-con").children().eq(i))
+      arr[arr2[0]]["content"].splice(arr2[1], 1);
+    }
+    localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+    showListCon();
+  });
 })
 
 // 恢复所有项目
 $(".handle li:eq(1)").on("click", function () {
-  $(".handle").slideUp();
-  let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
-  for (let i = 0, len = $(".bin-con").children().length; i < len; i++) {
-    let arr2 = findLocation($(".bin-con").children().eq(i));
-    arr[arr2[0]]["content"][arr2[1]]["recyclebin"] = false;
-  }
-  localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
-  showListCon();
-  setTitle();
+  $(".handle").slideUp(function () {
+    flag4 = 1;
+  });
+  $(".bin-con").fadeOut(function () {
+    let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
+    for (let i = 0, len = $(".bin-con").children().length; i < len; i++) {
+      let arr2 = findLocation($(".bin-con").children().eq(i));
+      arr[arr2[0]]["content"][arr2[1]]["recyclebin"] = false;
+    }
+    localStorage.setItem(`${localStorage.getItem("now-user")}-lists`, JSON.stringify(arr));
+    showListCon();
+    setTitle();
+  })
 })
 
 // 清除已完成
