@@ -496,7 +496,7 @@ $(".main input").on("blur", function () {
       }
       let li = $(`<li style="display: none"><span></span><em>${$(this).val().trim()}</em><i style="display: none">${id}</i></li>`);
       $(".nopriority").prepend(li);
-      li.slideDown(function () {
+      li.show(function () {
         showListCon();
         setTitle();
       });
