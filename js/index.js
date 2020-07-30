@@ -425,8 +425,6 @@ $("#addlistModal .confirm").on("click", function (e) {
       let arr = JSON.parse(localStorage.getItem(`${$(".user").html()}-lists`)) || [];
       if (arr.length >= 10) {
         showMes("清单数量已达上限")
-      } else if ($("#addlistModal input").val().length >= 30) {
-        showMes("清单命名不得超过<br />三十个字符")
       } else {
         let li = $(`<li class="current" style="display: none"><span style="background-color: ${color};"></span>${$("#addlistModal input").val()}</li>`)
         $(".scalable .lists li").removeClass("current");
@@ -557,17 +555,34 @@ $("html").on("contextmenu", function (e) {
   e.preventDefault();
 })
 const setRhList = (rhlist, x, y) => {
-  if (y / document.body.clientHeight < 0.75) {
+  let xCoordinate = x / document.body.clientWidth > 0.5;
+  let yCoordinate = y / document.body.clientHeight < 0.75;
+  if (xCoordinate == 1 && yCoordinate == 1) {
+    rhlist.css({
+      left: x - parseInt(rhlist.css("width")) + 'px',
+      top: y + 'px'
+    });
+    $(".yxj").attr("class", "yxj right");
+  } else if (xCoordinate == 0 && yCoordinate == 1) {
     rhlist.css({
       left: x + 'px',
       top: y + 'px'
+    });
+    $(".yxj").attr("class", "yxj left");
+  } else if (xCoordinate == 0 && yCoordinate == 0) {
+    rhlist.css({
+      left: x + 'px',
+      top: y - parseInt(rhlist.css("height")) + 'px'
     })
+    $(".yxj").attr("class", "yxj left");
   } else {
     rhlist.css({
       left: x - parseInt(rhlist.css("width")) + 'px',
       top: y - parseInt(rhlist.css("height")) + 'px'
     })
+    $(".yxj").attr("class", "yxj right");
   }
+
   rhlist.fadeIn(100);
   $("body").one('click', () => {
     if (rhlist.css("display") == "block") {
@@ -678,14 +693,11 @@ $(".lists").on("contextmenu", "li", function (e) {
 })
 // 重命名
 $(".youjian2 ul li:eq(0)").on("click", function () {
-  $(`.lists li:eq(${ind2})`).html(`${str1}</span><input>`)
+  $(`.lists li:eq(${ind2})`).html(`${str1}</span><input type="text" maxlength="30">`)
   $(`.lists li:eq(${ind2})`).children().eq(1).val(str2);
   $(`.lists li:eq(${ind2})`).children().eq(1).focus();
   $(`.lists li:eq(${ind2})`).children().eq(1).one("blur", function () {
     if (!$(`.lists li:eq(${ind2})`).children().eq(1).val().trim()) {
-      $(`.lists li:eq(${ind2})`).html(`${str1}</span>${str2}`);
-    } else if ($(`.lists li:eq(${ind2})`).children().eq(1).val().trim().length >= 30) {
-      showMes("清单命名不得超过<br />三十个字符");
       $(`.lists li:eq(${ind2})`).html(`${str1}</span>${str2}`);
     } else {
       let arr = JSON.parse(localStorage.getItem(`${localStorage.getItem("now-user")}-lists`));
